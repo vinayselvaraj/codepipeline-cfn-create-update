@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import zipfile
 
 def wait_for_stack(cfn_client, cfn_stack_name):
@@ -38,6 +39,9 @@ def wait_for_stack(cfn_client, cfn_stack_name):
             sys.exit(1)
         if stack['StackStatus'] in complete_states:
             return
+        
+        time.sleep(15)
+        
 
 # Get environment variables
 CODEPIPELINE_ARTIFACT_CREDENTIALS = json.loads(os.environ['CODEPIPELINE_ARTIFACT_CREDENTIALS'])
