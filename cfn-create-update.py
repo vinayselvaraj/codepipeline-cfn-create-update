@@ -6,6 +6,8 @@ from botocore.client import Config
 import json
 import os
 import sys
+import tempfile
+import zipfile
 
 # Get environment variables
 CODEPIPELINE_ARTIFACT_CREDENTIALS = json.loads(os.environ['CODEPIPELINE_ARTIFACT_CREDENTIALS'])
@@ -42,7 +44,27 @@ if sourceBundleArtifact == None or imageNameTagArtifact == None:
     print "SourceBundle and ImageNameTag must be provided"
     sys.exit(1)
 
-# Extract input artifacts
+
+_, srcBundleFile = tempfile.mkstemp()
+cp_s3_client.download_file(
+                            sourceBundleArtifact['location']['s3Location']['bucketName'],
+                            sourceBundleArtifact['location']['s3Location']['objectKey'],
+                            srcBundleFile)
+
+_, imageNameTagFile = tempfile.mkstemp()
+cp_s3_client.download_file(
+                            imageNameTagArtifact['location']['s3Location']['bucketName'],
+                            imageNameTagArtifact['location']['s3Location']['objectKey'],
+                            imageNameTagFile)
+
+# Extract source bundle
+src_bundle_dir = tempfile.mkdtemp()
+zf = zipfile.ZipFile(srcBundleFile, 'r')
+zf.extractAll(src_bundle_dir)
+zf.close()
+
+cfn_template = src_bundle_dir + "/" + user_params['cfnStackTemplate']
+print "cfn_template = %s" % cfn_template
 
 # Create CFN stack if it does not exist
 
