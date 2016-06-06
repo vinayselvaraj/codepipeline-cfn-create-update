@@ -77,8 +77,12 @@ print "image_name = %s" % image_name
 cfn_client = boto3.client('cloudformation',
                           region_name=user_params['awsRegion'])
 
-desc_stacks_result = cfn_client.describe_stacks(StackName = user_params['cfnStackName'])
-print desc_stacks_result
+# Check if stack exists.  An exception is thrown if it does not
+try:
+    cfn_client.describe_stacks(StackName = user_params['cfnStackName'])
+    stack_exists = True
+except:
+    stack_exists = False
 
 # Setup CFN Stack Parameters
 cfn_stack_params = list()
@@ -96,14 +100,14 @@ for key in user_params.keys():
 # Append ECR Image Name to use
 cfn_stack_params.append(
     {
-        "ParameterKey" : "DOCKER_IMAGE",
+        "ParameterKey" : "DockerImageName",
         "ParameterValue" : image_name
     }
 )
 
 stack = None
 
-if len(desc_stacks_result['Stacks']) == 1:
+if stack_exists:
     # Do stack update
     print "Doing stack update"
     stack = cfn_client.update_stack(
