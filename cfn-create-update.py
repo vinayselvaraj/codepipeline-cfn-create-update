@@ -44,7 +44,6 @@ if sourceBundleArtifact == None or imageNameTagArtifact == None:
     print "SourceBundle and ImageNameTag must be provided"
     sys.exit(1)
 
-
 _, srcBundleFile = tempfile.mkstemp()
 cp_s3_client.download_file(
                             sourceBundleArtifact['location']['s3Location']['bucketName'],
@@ -60,7 +59,7 @@ cp_s3_client.download_file(
 # Extract source bundle
 src_bundle_dir = tempfile.mkdtemp()
 zf = zipfile.ZipFile(srcBundleFile, 'r')
-zf.extractAll(src_bundle_dir)
+zf.extractall(src_bundle_dir)
 zf.close()
 
 cfn_template = src_bundle_dir + "/" + user_params['cfnStackTemplate']
