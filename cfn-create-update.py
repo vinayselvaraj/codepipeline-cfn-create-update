@@ -63,7 +63,7 @@ zf.extractall(src_bundle_dir)
 zf.close()
 
 cfn_template_file = src_bundle_dir + "/" + user_params['cfnStackTemplate']
-print "cfn_template = %s" % cfn_template
+print "cfn_template = %s" % cfn_template_file
 with open(cfn_template_file, 'r') as cfn_template_file_ref:
     cfn_template_json = cfn_template_file_ref.read()
 
