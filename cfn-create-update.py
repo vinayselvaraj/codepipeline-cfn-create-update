@@ -71,10 +71,20 @@ with open(imageNameTagFile, 'r') as image_name_tag_ref:
 
 print "image_name = %s" % image_name
 
-# Create CFN stack if it does not exist
+# Create CFN stack if it does not exist, otherwise update it
+cfn_client = boto3.client('cloudformation',
+                          region_name=user_params['awsRegion'])
 
-# Update CFN stack if it does exist
+desc_stacks_result = cfn_client.describe_stacks(StackName = user_params['cfnStackName'])
+print desc_stacks_result
 
+if len(desc_stacks_result['Stacks']) == 1:
+    # Do stack update
+    print "Doing stack update"
+else:
+    # Do stack create
+    print "Doing stack create"
+    
 # Wait for stack create/update to complete
 
 print "-- CloudFormation Create/Update Task Complete --"
