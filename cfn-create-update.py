@@ -38,3 +38,4 @@ if sourceBundleArtifact == None or imageNameTagArtifact == None:
     print "SourceBundle and ImageNameTag must be provided"
     sys.exit(1)
 
+print "-- CloudFormation Create/Update Task Complete --"
