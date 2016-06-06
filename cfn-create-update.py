@@ -9,6 +9,36 @@ import sys
 import tempfile
 import zipfile
 
+def wait_for_stack(cfn_client, cfn_stack_name):
+    
+    failed_states = [
+        'CREATE_FAILED',
+        'ROLLBACK_IN_PROGRESS',
+        'ROLLBACK_FAILED',
+        'ROLLBACK_COMPLETE',
+        'DELETE_IN_PROGRESS',
+        'DELETE_FAILED',
+        'UPDATE_ROLLBACK_IN_PROGRESS',
+        'UPDATE_ROLLBACK_FAILED',
+        'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS',
+        'UPDATE_ROLLBACK_COMPLETE'        
+    ]
+    
+    complete_states = [
+        'CREATE_COMPLETE',
+        'UPDATE_COMPLETE'
+    ]
+    
+    
+    while True:
+        desc_stacks_result = cfn_client.describe_stacks(StackName = cfn_stack_name)
+        stack = desc_stacks_result['Stacks'][0]
+        if stack['StackStatus'] in failed_states:
+            print "Stack in state: %s" % stack['StackStatus']
+            sys.exit(1)
+        if stack['StackStatus'] in complete_states:
+            return
+
 # Get environment variables
 CODEPIPELINE_ARTIFACT_CREDENTIALS = json.loads(os.environ['CODEPIPELINE_ARTIFACT_CREDENTIALS'])
 CODEPIPELINE_USER_PARAMS          = json.loads(os.environ['CODEPIPELINE_USER_PARAMS'])
@@ -113,8 +143,6 @@ if stack_exists:
     # Do stack update
     print "Doing stack update"
     
-    wait_for_stack(cfn_client, user_params['cfnStackName'])
-    
     stack = cfn_client.update_stack(
         StackName = user_params['cfnStackName'],
         TemplateBody=cfn_template_json,
@@ -123,6 +151,9 @@ if stack_exists:
             'CAPABILITY_IAM'
         ]
     )
+    
+    wait_for_stack(cfn_client, user_params['cfnStackName'])
+    
 else:
     # Do stack create
     stack = cfn_client.create_stack(
