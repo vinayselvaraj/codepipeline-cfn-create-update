@@ -66,6 +66,12 @@ zf.close()
 cfn_template = src_bundle_dir + "/" + user_params['cfnStackTemplate']
 print "cfn_template = %s" % cfn_template
 
+# Read image name tag
+with open(imageNameTagFile, 'r') as image_name_tag_ref:
+    image_name = image_name_tag_ref.read().replace('\n', '')
+
+print "image_name = %s" % image_name
+
 # Create CFN stack if it does not exist
 
 # Update CFN stack if it does exist
