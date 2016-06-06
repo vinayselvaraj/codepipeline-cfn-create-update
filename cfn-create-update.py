@@ -34,7 +34,7 @@ def wait_for_stack(cfn_client, cfn_stack_name):
         desc_stacks_result = cfn_client.describe_stacks(StackName = cfn_stack_name)
         stack = desc_stacks_result['Stacks'][0]
         if stack['StackStatus'] in failed_states:
-            print "Stack in state: %s" % stack['StackStatus']
+            print "Stack %s in state: %s" % (cfn_stack_name, stack['StackStatus'])
             sys.exit(1)
         if stack['StackStatus'] in complete_states:
             return
