@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import boto3
+import json
+import os
 import sys
 
 # Get environment variables
