@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import boto3
+from botocore.client import Config
+
 import json
 import os
 import sys
@@ -39,5 +41,13 @@ for artifact in CODEPIPELINE_INPUT_ARTIFACTS:
 if sourceBundleArtifact == None or imageNameTagArtifact == None:
     print "SourceBundle and ImageNameTag must be provided"
     sys.exit(1)
+
+# Extract input artifacts
+
+# Create CFN stack if it does not exist
+
+# Update CFN stack if it does exist
+
+# Wait for stack create/update to complete
 
 print "-- CloudFormation Create/Update Task Complete --"
