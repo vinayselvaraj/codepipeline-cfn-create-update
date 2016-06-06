@@ -92,7 +92,14 @@ for key in user_params.keys():
                 "ParameterValue" : param_value
             }
         )
-        
+
+# Append ECR Image Name to use
+cfn_stack_params.append(
+    {
+        "ParameterKey" : "DOCKER_IMAGE",
+        "ParameterValue" : image_name
+    }
+)
 
 stack = None
 
