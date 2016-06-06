@@ -99,6 +99,14 @@ stack = None
 if len(desc_stacks_result['Stacks']) == 1:
     # Do stack update
     print "Doing stack update"
+    stack = cfn_client.update_stack(
+        StackName = user_params['cfnStackName'],
+        TemplateBody=cfn_template_json,
+        Parameters=cfn_stack_params,
+        Capabilities=[
+            'CAPABILITY_IAM'
+        ]
+    )
 else:
     # Do stack create
     stack = cfn_client.create_stack(
@@ -109,7 +117,8 @@ else:
             'CAPABILITY_IAM'
         ]
     )
-    print stack
+
+print stack
     
 # Wait for stack create/update to complete
 
