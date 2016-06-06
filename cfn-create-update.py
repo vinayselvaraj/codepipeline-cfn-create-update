@@ -62,8 +62,10 @@ zf = zipfile.ZipFile(srcBundleFile, 'r')
 zf.extractall(src_bundle_dir)
 zf.close()
 
-cfn_template = src_bundle_dir + "/" + user_params['cfnStackTemplate']
+cfn_template_file = src_bundle_dir + "/" + user_params['cfnStackTemplate']
 print "cfn_template = %s" % cfn_template
+with open(cfn_template_file, 'r') as cfn_template_file_ref:
+    cfn_template_json = cfn_template_file_ref.read()
 
 # Read image name tag
 with open(imageNameTagFile, 'r') as image_name_tag_ref:
@@ -78,12 +80,36 @@ cfn_client = boto3.client('cloudformation',
 desc_stacks_result = cfn_client.describe_stacks(StackName = user_params['cfnStackName'])
 print desc_stacks_result
 
+# Setup CFN Stack Parameters
+cfn_stack_params = list()
+for key in user_params.keys():
+    if key.startswith("CFN_PARAM:"):
+        param_key = key.split(":")[1]
+        param_value = user_params.get(key)
+        cfn_stack_params.append(
+            {
+                "ParameterKey" : param_key,
+                "ParameterValue" : param_value
+            }
+        )
+        
+
+stack = None
+
 if len(desc_stacks_result['Stacks']) == 1:
     # Do stack update
     print "Doing stack update"
 else:
     # Do stack create
-    print "Doing stack create"
+    stack = cfn_client.create_stack(
+        StackName = user_params['cfnStackName'],
+        TemplateBody=cfn_template_json,
+        Parameters=cfn_stack_params,
+        Capabilities=[
+            'CAPABILITY_IAM'
+        ]
+    )
+    print stack
     
 # Wait for stack create/update to complete
 
