@@ -105,11 +105,16 @@ cfn_stack_params.append(
     }
 )
 
+print "cfn_stack_params = %s" % cfn_stack_params
+
 stack = None
 
 if stack_exists:
     # Do stack update
     print "Doing stack update"
+    
+    wait_for_stack(cfn_client, user_params['cfnStackName'])
+    
     stack = cfn_client.update_stack(
         StackName = user_params['cfnStackName'],
         TemplateBody=cfn_template_json,
